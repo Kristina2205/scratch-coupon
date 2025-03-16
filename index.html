@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Скретч Купон</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+        .coupon {
+            background-color: #fff;
+            border: 2px solid #ddd;
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            text-align: center;
+            font-size: 20px;
+            position: relative;
+        }
+        #scratchpad {
+            width: 300px;
+            height: 150px;
+            background-color: #ff66b2;
+            cursor: pointer;
+            position: relative;
+            z-index: 10;
+        }
+        .scratch-result {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: black;
+            font-weight: bold;
+            z-index: 5;
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <h1>Ваш Скретч Купон</h1>
+    <div class="coupon">
+        <p>Потрите поле, чтобы узнать свою скидку!</p>
+        <div id="result" class="scratch-result"></div>
+        <canvas id="scratchpad"></canvas>
+    </div>
+
+    <script>
+        const scratchpad = document.getElementById("scratchpad");
+        const ctx = scratchpad.getContext("2d");
+        scratchpad.width = 300;
+        scratchpad.height = 150;
+
+        // Заполняем поле розовым цветом
+        ctx.fillStyle = "#ff66b2";
+        ctx.fillRect(0, 0, scratchpad.width, scratchpad.height);
+
+        let isDrawing = false;
+        let discountShown = false;
+
+        // Список скидок
+        const discounts = ["Скидка 5%", "Скидка 10%", "Скидка 15%", "Скидка 20%", "Скидка 25%"];
+        const randomDiscount = discounts[Math.floor(Math.random() * discounts.length)];
+        document.getElementById("result").textContent = randomDiscount;
+
+        // Начинаем стирать
+        function startScratch(e) {
+            isDrawing = true;
+            scratch(e);
+        }
+
+        function scratch(e) {
+            if (!isDrawing) return;
+
+            const rect = scratchpad.getBoundingClientRect();
+            const x = e.clientX ? e.clientX - rect.left : e.touches[0].clientX - rect.left;
+            const y = e.clientY ? e.clientY - rect.top : e.touches[0].clientY - rect.top;
+
+            ctx.clearRect(x - 15, y - 15, 30, 30);
+
+            if (!discountShown) {
+                document.getElementById("result").style.visibility = "visible";
+                discountShown = true;
+            }
+        }
+
+        function stopScratch() {
+            isDrawing = false;
+        }
+
+        // Добавляем обработчики событий
+        scratchpad.addEventListener("mousedown", startScratch);
+        scratchpad.addEventListener("mousemove", scratch);
+        scratchpad.addEventListener("mouseup", stopScratch);
+        scratchpad.addEventListener("touchstart", startScratch);
+        scratchpad.addEventListener("touchmove", scratch);
+        scratchpad.addEventListener("touchend", stopScratch);
+    </script>
+</body>
+</html>
